@@ -113,7 +113,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-   bool has_pwd_arg = ( argc > 2 );
+   int has_pwd_arg = ( argc > 2 );
 
 	/* If a password was passed as an arg then use. */
    if( has_pwd_arg )
