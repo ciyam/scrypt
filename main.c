@@ -41,7 +41,7 @@ usage(void)
 {
 
 	fprintf(stderr,
-	    "usage: scrypt {enc | dec} [...] infile [outfile]\n");
+	    "usage: scrypt {enc | dec} [...] infile [outfile] [[password]]\n");
 	exit(1);
 }
 
@@ -95,8 +95,8 @@ main(int argc, char *argv[])
 	argc -= optind;
 	argv += optind;
 
-	/* We must have one or two parameters left. */
-	if ((argc < 1) || (argc > 2))
+	/* We must have one, two or three parameters left. */
+	if ((argc < 1) || (argc > 3))
 		usage();
 
 	/* Open the input file. */
@@ -113,10 +113,18 @@ main(int argc, char *argv[])
 		}
 	}
 
-	/* Prompt for a password. */
-	if (tarsnap_readpass(&passwd, "Please enter passphrase",
-	    dec ? NULL : "Please confirm passphrase", 1))
-		exit(1);
+   bool has_pwd_arg = ( argc > 2 );
+
+	/* If a password was passed as an arg then use. */
+   if( has_pwd_arg )
+      passwd = argv[ 2 ];
+   else
+   {
+	   /* Prompt for a password. */
+	   if (tarsnap_readpass(&passwd, "Please enter passphrase",
+	      dec ? NULL : "Please confirm passphrase", 1))
+		   exit(1);
+   }
 
 	/* Encrypt or decrypt. */
 	if (dec)
@@ -126,9 +134,12 @@ main(int argc, char *argv[])
 		rc = scryptenc_file(infile, outfile, (uint8_t *)passwd,
 		    strlen(passwd), maxmem, maxmemfrac, maxtime);
 
-	/* Zero and free the password. */
-	memset(passwd, 0, strlen(passwd));
-	free(passwd);
+   if( !has_pwd_arg )
+   {
+	   /* Zero and free the password. */
+	   memset(passwd, 0, strlen(passwd));
+	   free(passwd);
+   }
 
 	/* If we failed, print the right error message and exit. */
 	if (rc != 0) {
