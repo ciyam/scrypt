@@ -121,8 +121,8 @@ main(int argc, char *argv[])
    else
    {
 	   /* Prompt for a password. */
-	   if (tarsnap_readpass(&passwd, "Please enter passphrase",
-	      dec ? NULL : "Please confirm passphrase", 1))
+	   if (tarsnap_readpass(&passwd, "Please enter password",
+	      dec ? NULL : "Please confirm password", 1))
 		   exit(1);
    }
 
@@ -175,7 +175,7 @@ main(int argc, char *argv[])
 			warnx("Decrypting file would take too much CPU time");
 			break;
 		case 11:
-			warnx("Passphrase is incorrect");
+			warnx("Password is incorrect");
 			break;
 		case 12:
 			warn("Error writing file: %s",
